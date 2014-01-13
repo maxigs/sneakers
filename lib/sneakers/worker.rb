@@ -54,9 +54,18 @@ module Sneakers
           Timeout.timeout(@timeout_after) do
             metrics.timing("work.#{self.class.name}.time") do
               klass = (self.class.name + '::Task').constantize
-              task = klass.new(hdr, props, msg)
+              task = klass.new({
+                hdr: hdr,
+                props: props,
+                msg: msg,
+                logger: logger
+              })
               task.call
               res = task.status
+
+              if res == :error
+                error = task.error_message
+              end
             end
           end
         rescue Timeout::Error

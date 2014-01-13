@@ -1,10 +1,13 @@
 module Sneakers
   module Task
 
-    def initialize(hdr, props, msg)
-      @hdr = hdr
-      @props = props
-      @msg = msg
+    attr_reader :status, :error_message, :logger
+
+    def initialize(args = {})
+      @hdr    = args[:hdr]
+      @props  = args[:props]
+      @msg    = args[:msg]
+      @logger = args[:logger]
 
       @status = :new
     end
@@ -13,8 +16,21 @@ module Sneakers
       @status = :ack
     end
 
-    def status
-      @status
+    def requeue!
+      @status = :requeue
+    end
+
+    def reject!
+      @status = :reject
+    end
+
+    def timeout!
+      @status = :timeout
+    end
+
+    def error!(error_message)
+      @status = :error
+      @error_message = error_message
     end
 
   end
