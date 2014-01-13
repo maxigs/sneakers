@@ -53,7 +53,10 @@ module Sneakers
           metrics.increment("work.#{self.class.name}.started")
           Timeout.timeout(@timeout_after) do
             metrics.timing("work.#{self.class.name}.time") do
-              res = work(msg)
+              klass = (self.class.name + '::Task').constantize
+              task = klass.new(hdr, props, msg)
+              task.call
+              res = task.status
             end
           end
         rescue Timeout::Error
@@ -62,7 +65,7 @@ module Sneakers
         rescue => ex
           res = :error
           error = ex
-          logger.error(ex)
+          logger.error "\n\nEXCEPTION: #{ex.message}\nPAYLOAD:\n#{msg.inspect}\nBACKTRACE\n#{ex.message}\n#{ex.backtrace.join("\n")}"
         end
 
         if @should_ack

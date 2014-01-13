@@ -16,6 +16,7 @@ require 'sneakers/concerns/logging'
 require 'sneakers/concerns/metrics'
 require 'sneakers/handlers/oneshot'
 require 'sneakers/worker'
+require 'sneakers/task'
 require 'sneakers/publisher'
 
 module Sneakers
